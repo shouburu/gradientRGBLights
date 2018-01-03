@@ -1,10 +1,14 @@
-//#include <Keypad.h>
+#include <Keypad.h>
 
 
 double timeInc = 0.01;
-int cP = 1;
+int delaySecs = 10;
+int cP = 0;
 double currentTime = 0.0;
 double totalTime = 10.0;
+#define BLUE 11
+#define GREEN 12
+#define RED 13
 
 double patterns[6][8][4] = {
   {{0,0,0,.4},{255,0,0,.5},{0,0,0,.6},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1}},//red flash
@@ -28,7 +32,7 @@ byte rowPins[4] = { 24, 25, 26, 27 };
 // Connect keypad COL0, COL1 and COL2 to these Arduino pins.
 byte colPins[4] = { 32, 33, 34, 35 }; 
 
-//Keypad kpd = Keypad( makeKeymap(keys), rowPins, colPins, 4, 4 );
+Keypad kpd = Keypad( makeKeymap(keys), rowPins, colPins, 4, 4 );
 
 int pC = 0, nC = 0;
 double percentIntervalPassed = 0.0;
@@ -57,7 +61,6 @@ void updateColors() {
   
   if ( patterns[cP][pC+1][3] == -1 ){
     nC = 0;
-    //percentIntervalPassed = (currentTime - patterns[cP][pC][3] >= 0 ? currentTime - patterns[cP][pC][3] : currentTime - patterns[cP][pC][3] + 10.0)/(patterns[cP][nC][3] + (10.0 - patterns[cP][pC][3]));
     shiftDuration = 10.0 - patterns[cP][pC][3] + patterns[cP][nC][3];
     currentTime > patterns[cP][nC][3] ? shiftPassed = currentTime - patterns[cP][pC][3] : shiftPassed = 10.0 - patterns[cP][pC][3] + currentTime;
     percentIntervalPassed = shiftPassed/shiftDuration;
@@ -75,12 +78,12 @@ void updateColors() {
   //Serial.print(currentTime);
   //Serial.print("PIP: ");
   //Serial.print(percentIntervalPassed);
-  Serial.print("Red: ");
-  Serial.print(curR);
-  Serial.print(", Green: ");
-  Serial.print(curG);
-  Serial.print(", Blue: ");
-  Serial.println(curR);
+  //Serial.print("Red: ");
+  //Serial.print(curR);
+  //Serial.print(", Green: ");
+  //Serial.print(curG);
+  //Serial.print(", Blue: ");
+  //Serial.println(curR);
   //Serial.print("PrevColor: ");
   //Serial.println(pC);
  }
@@ -88,21 +91,73 @@ void updateColors() {
 
 void setup() {
   Serial.begin(9600);
-  pinMode(7, OUTPUT);
-  pinMode(6, OUTPUT);
-  pinMode(5, OUTPUT);
+  pinMode(RED, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+  pinMode(BLUE, OUTPUT);
   currentTime = 0;
 }
 
+char key;
 void loop() {
-  //Serial.println(kpd.getKey())
+  switch(kpd.getKey()) {
+      case 'A':
+        cP = 0;
+        break;
+      case 'B':
+        cP = 1;
+        break;
+      case 'C':
+        cP = 2;
+        break;
+      case 'D':
+        cP = 3;
+        break;
+      case '#':
+        cP = 4;
+        break;
+      case '*':
+        cP = 5;
+        break;
+      case '1':
+        delaySecs = 1;
+        break;
+      case '2':
+        delaySecs = 2;
+        break;
+      case '3':
+        delaySecs = 3;
+        break;
+      case '4':
+        delaySecs = 4;
+        break;
+      case '5':
+        delaySecs = 5;
+        break;
+      case '6':
+        delaySecs = 6;
+        break;
+      case '7':
+        delaySecs = 7;
+        break;
+      case '8':
+        delaySecs = 8;
+        break;
+      case '9':
+        delaySecs = 9;
+        break;
+      case '0':
+        delaySecs = 10;
+        break;
+      default:
+        break;
+  }
   currentTime += timeInc;
-  if ( currentTime > totalTime ) currentTime -= totalTime;
-
-
-  
+  if ( currentTime >= totalTime ) currentTime -= totalTime;
+  analogWrite(RED, curR);
+  analogWrite(GREEN, curG);
+  analogWrite(BLUE, curB);
   updateColors();
-  delay(10);
+  delay(delaySecs);
 
   
 
